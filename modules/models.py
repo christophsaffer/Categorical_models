@@ -1,7 +1,9 @@
 import pandas as pd
 import itertools
+import numpy as np
 
 from utils.utils import *
+
 
 class Categ:
 
@@ -59,7 +61,34 @@ class Categ:
             numb = ((temp_table == True).sum() == numb_columns).sum()
             modeltable.iloc[i, numb_columns] = numb / numb_data
 
+        modeltable.to_csv(self.path_models + 'model_' + self.nameoffile)
+        print("Saved model in: ", self.path_models)
+
         return modeltable
+
+    def sampling(self, model, k):
+
+        compl = self.model_compl()
+        columns = list(self.data.columns)
+        samples = pd.DataFrame(columns=columns)
+
+        buckets = pd.DataFrame(columns=['limits'])
+
+        buckets.loc[0] = model.p.loc[0]
+        for i in range(1, len(model)):
+            buckets.loc[i] = model.p.loc[i] + buckets.loc[i-1]
+
+        for i in range(0, k):
+            rand = np.random.uniform()
+            for k in range(0, len(model)):
+                if rand <= float(buckets.loc[k]):
+                    break;
+            samples.loc[i] = list(model.iloc[k, 0:len(columns)])
+
+        samples.to_csv(self.path_models + 'sampling_' + str(k) + '_' + self.nameoffile)
+        print("Saved samples in: ", self.path_models)
+
+        return samples
 
 '''
     def marg(model):
