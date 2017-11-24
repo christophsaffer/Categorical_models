@@ -6,3 +6,7 @@ def read_csv_data(path_data, nameoffile):
         data[col] = data[col].astype('category')
 
     return data
+
+def import_model(path_data, modelname):
+	data = pd.read_csv(path_data + modelname, index_col=0)
+	return data
