@@ -7,12 +7,13 @@ from utils.utils import *
 
 class Categ:
 
-    def __init__(self, nameoffile):
-        self.nameoffile = nameoffile
+    def __init__(self, name):
+        self.name = name
         self.path_data = 'data_sets/'
         self.path_models = 'models/'
         self.path_samples = 'samples/'
-        self.data = read_csv_data(self.path_data, self.nameoffile)
+        self.data = 0
+        self.model = 0
 
     def model_compl(self):
         data = self.data
@@ -62,12 +63,14 @@ class Categ:
             numb = ((temp_table == True).sum() == numb_columns).sum()
             modeltable.iloc[i, numb_columns] = float(numb) / float(numb_data)
 
-        modeltable.to_csv(self.path_models + 'model_' + self.nameoffile)
+        modeltable.to_csv(self.path_models + 'model_' + self.name)
         print("Saved model in: ", self.path_models)
 
         return modeltable
 
-    def sampling(self, model, k):
+    def sampling(self, k):
+
+        model = self.model
 
         compl = self.model_compl()
         columns = list(self.data.columns)
@@ -87,13 +90,14 @@ class Categ:
             samples.loc[i] = list(model.iloc[j, 0:len(columns)])
 
         samples.to_csv(self.path_samples + 'sampling_' +
-                       str(k) + '_' + self.nameoffile)
+                       str(k) + '_' + self.name)
         print("Saved samples in: ", self.path_models)
 
         return samples
 
-    def argmaximum(self, model):
+    def argmaximum(self):
 
+        model = self.model
         cond = True
         i = 0
         sorted_model = model.p.sort_values(ascending=False)
@@ -121,7 +125,9 @@ class Categ:
 
         return solution
 
-    def dens(self, model, values):
+    def dens(self, values):
+
+        model = self.model
 
         model_without_dens = model.iloc[:, 0:len(model.columns) - 1]
         values = list(values)
